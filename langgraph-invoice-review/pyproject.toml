@@ -1,0 +1,36 @@
+[project]
+name = "langgraph-invoice-review"
+version = "0.1.0"
+description = "LangGraph + Relayna: PDF invoice human-in-the-loop review demo"
+requires-python = ">=3.11"
+dependencies = [
+    # LangGraph workflow engine
+    "langgraph>=0.2",
+    # OpenAI via LangChain
+    "langchain-openai>=0.2",
+    "langchain-core>=0.3",
+    # HTTP client for Relayna API
+    "httpx>=0.27",
+    # Environment variable loading
+    "python-dotenv>=1.0",
+    # PDF text extraction (fallback for non-vision extraction)
+    "pypdf>=4.0",
+    # Sample invoice PDF generation (scripts/generate_invoice.py)
+    "reportlab>=4.0",
+    # Optional: webhook receiver mode
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ipython",
+    "pytest>=8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["invoice_review"]
