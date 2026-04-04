@@ -57,8 +57,11 @@ This is what makes this example an **agent** rather than a workflow:
 ```bash
 # Using uv (recommended)
 uv venv && uv pip install -e .
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
 # Or with pip
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e .
 ```
 
