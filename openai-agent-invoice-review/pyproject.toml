@@ -1,0 +1,30 @@
+[project]
+name = "openai-agent-invoice-review"
+version = "0.1.0"
+description = "OpenAI function-calling agent + Relayna human-in-the-loop review demo"
+requires-python = ">=3.11"
+dependencies = [
+    # OpenAI SDK for function-calling agent loop
+    "openai>=1.30",
+    # HTTP client for Relayna API
+    "httpx>=0.27",
+    # Environment variable loading
+    "python-dotenv>=1.0",
+    # PDF text extraction
+    "pypdf>=4.0",
+    # Sample invoice PDF generation (scripts/generate_invoice.py)
+    "reportlab>=4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ipython",
+    "pytest>=8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["invoice_agent"]
