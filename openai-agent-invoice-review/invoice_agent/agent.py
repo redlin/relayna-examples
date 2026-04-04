@@ -89,6 +89,10 @@ def run_agent(
         {"role": "user", "content": user_message},
     ]
 
+    # Shared mutable state for tool executors — used to propagate values (e.g.
+    # asset_id) between tool calls without relying on the LLM to re-state them.
+    context: dict = {}
+
     print(f"\n  Agent starting — model: gpt-4o")
 
     while True:
@@ -112,6 +116,7 @@ def run_agent(
             result = execute_tool(
                 name=tool_call.function.name,
                 arguments_json=tool_call.function.arguments,
+                context=context,
             )
             messages.append({
                 "role": "tool",

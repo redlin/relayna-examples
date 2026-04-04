@@ -179,7 +179,7 @@ def _checkpoint_ttl() -> int:
     return int(os.environ.get("CHECKPOINT_TTL_SECONDS", "86400"))
 
 
-def execute_extract_pdf_text(args: dict) -> dict:
+def execute_extract_pdf_text(args: dict, context: dict) -> dict:
     pdf_path = Path(args["pdf_path"])
     if not pdf_path.exists():
         return {"error": f"File not found: {pdf_path}"}
@@ -198,7 +198,7 @@ def execute_extract_pdf_text(args: dict) -> dict:
     return {"text": text}
 
 
-def execute_upload_invoice_pdf(args: dict) -> dict:
+def execute_upload_invoice_pdf(args: dict, context: dict) -> dict:
     client = _get_client()
     pdf_path = args["pdf_path"]
     purpose = args.get("purpose", "invoice")
@@ -210,20 +210,25 @@ def execute_upload_invoice_pdf(args: dict) -> dict:
             purpose=purpose,
             ttl_seconds=ttl_seconds,
         )
+        # Store in context so create_review_checkpoint can reliably retrieve it
+        # without depending on the LLM correctly propagating the value.
+        context["asset_id"] = asset_id
         print(f"    [upload_invoice_pdf] Uploaded → asset_id: {asset_id}")
         return {"asset_id": asset_id}
     except RelaynaError as e:
         return {"error": str(e)}
 
 
-def execute_create_review_checkpoint(args: dict) -> dict:
+def execute_create_review_checkpoint(args: dict, context: dict) -> dict:
     client = _get_client()
 
     items: list[dict] = []
     position = 0
 
-    # Attach the uploaded PDF so the reviewer can open/download the original
-    asset_id = args.get("asset_id")
+    # Use the asset_id stored by execute_upload_invoice_pdf rather than trusting
+    # what the LLM passes — models sometimes propagate placeholder values instead
+    # of the actual UUID returned by the upload tool.
+    asset_id = context.get("asset_id") or args.get("asset_id")
     if asset_id:
         items.append({
             "item_type": "asset",
@@ -275,7 +280,7 @@ def execute_create_review_checkpoint(args: dict) -> dict:
     return {"checkpoint_id": checkpoint_id, "review_url": review_url}
 
 
-def execute_poll_checkpoint_status(args: dict) -> dict:
+def execute_poll_checkpoint_status(args: dict, context: dict) -> dict:
     client = _get_client()
     checkpoint_id = args["checkpoint_id"]
     interval = _poll_interval()
@@ -304,7 +309,7 @@ def execute_poll_checkpoint_status(args: dict) -> dict:
         time.sleep(interval)
 
 
-def execute_cancel_checkpoint(args: dict) -> dict:
+def execute_cancel_checkpoint(args: dict, context: dict) -> dict:
     client = _get_client()
     checkpoint_id = args["checkpoint_id"]
     reason = args.get("reason", "")
@@ -328,9 +333,13 @@ TOOL_REGISTRY: dict[str, Any] = {
 }
 
 
-def execute_tool(name: str, arguments_json: str) -> dict:
+def execute_tool(name: str, arguments_json: str, context: dict) -> dict:
     """
     Dispatch a tool call by name, parse the JSON arguments, and return the result.
+
+    `context` is a mutable dict shared across all tool calls in a single agent run.
+    It is used to propagate values (e.g. asset_id) between tools reliably, without
+    depending on the LLM correctly re-stating values from previous tool results.
 
     Returns an error dict if the tool is unknown or raises an unexpected exception.
     """
@@ -345,7 +354,7 @@ def execute_tool(name: str, arguments_json: str) -> dict:
     print(f"\n  → Tool call: {name}({_summarise_args(args)})")
 
     try:
-        return TOOL_REGISTRY[name](args)
+        return TOOL_REGISTRY[name](args, context)
     except Exception as e:
         return {"error": f"Tool execution failed: {e}"}
 
