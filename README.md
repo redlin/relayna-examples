@@ -1,6 +1,6 @@
 # Relayna Examples
 
-Official code examples showing how to integrate [Relayna](https://relayna.com) — the human-in-the-loop review platform for AI agents — into your workflows.
+Official code examples showing how to integrate [Relayna](https://relayna.app) — the human-in-the-loop review platform for AI agents — into your workflows.
 
 ## Examples
 
@@ -14,7 +14,7 @@ Relayna lets AI agents pause and request human review at critical decision point
 
 ## Getting Started
 
-1. Sign up at [relayna.com](https://relayna.com) or [run Relayna locally](https://github.com/redlin/relayna)
+1. Sign up at [relayna.app](https://relayna.app) or [run Relayna locally](https://github.com/redlin/relayna)
 2. Generate an API key from the dashboard
 3. Pick an example and follow its README
 

@@ -73,7 +73,7 @@ cp .env.example .env
 Edit `.env`:
 
 ```
-RELAYNA_BASE_URL=http://localhost:4000     # your Relayna URL
+RELAYNA_BASE_URL=https://relayna.app      # your Relayna URL
 RELAYNA_API_KEY=relayna:your_key_here     # from /dashboard/api-keys
 ANTHROPIC_API_KEY=sk-ant-...             # your Claude API key
 ```
@@ -81,7 +81,7 @@ ANTHROPIC_API_KEY=sk-ant-...             # your Claude API key
 ### 3. Create an API key in Relayna
 
 1. Start Relayna: `mix phx.server` (from the repo root)
-2. Register an account at `http://localhost:4000`
+2. Register an account at `https://relayna.app`
 3. Go to **Dashboard → API Keys → New Key**
 4. Copy the key into your `.env`
 
