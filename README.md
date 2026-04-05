@@ -7,6 +7,7 @@ Official code examples showing how to integrate [Relayna](https://relayna.app) â
 | Example | Description | Stack |
 |---|---|---|
 | [langgraph-invoice-review](./langgraph-invoice-review/) | PDF invoice approval workflow with human review checkpoint | Python, LangGraph, OpenAI |
+| [openai-agent-invoice-review](./openai-agent-invoice-review/) | PDF invoice approval workflow using the OpenAI Agents SDK | Python, OpenAI Agents SDK |
 
 ## What is Relayna?
 
